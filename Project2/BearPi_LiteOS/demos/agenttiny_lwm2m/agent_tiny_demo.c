@@ -47,7 +47,7 @@
 
 #define LWM2M_LIFE_TIME     50000
 
-char *g_endpoint_name = "20190412";
+char *g_endpoint_name = "869505047090426";//char *g_endpoint_name = "20190412";//869505047090426
 #ifdef WITH_DTLS
 
 char *g_endpoint_name_s = "2019032219";

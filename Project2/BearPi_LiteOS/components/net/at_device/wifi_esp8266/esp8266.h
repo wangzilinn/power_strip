@@ -36,8 +36,10 @@
 
 #include "at_frame/at_main.h"
 
-#define WIFI_SSID      		"Hold"
-#define WIFI_PASSWD    		"0987654321"
+//#define WIFI_SSID      		"zy202"//#define WIFI_SSID      		"Hold"
+//#define WIFI_PASSWD    		"wsn405405"//#define WIFI_PASSWD    		"0987654321"
+#define WIFI_SSID      		"1004"
+#define WIFI_PASSWD    		"123456789"
 
 #define AT_MODU_NAME    	"ESP8266"
 #define AT_USART_PORT   	4
