@@ -31,6 +31,7 @@
  * Import, export and usage of Huawei LiteOS in any manner by you shall be in compliance with such
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
+#include "internals.h"
 
 #include "agent_tiny_demo.h"
 #include "bh1750.h"
@@ -50,7 +51,7 @@
 // NB-IOT device IMEI number
 //char *g_endpoint_name = "869505047090426";//char *g_endpoint_name = "20190412";//869505047090426
 // wifi device mac  bc:dd:c2:2f:54:26
-char *g_endpoint_name = "bc:dd:c2:2f:54:26";
+char *g_endpoint_name = "bc:dd:c2:2f:54:26CHANGE";
 
 #ifdef WITH_DTLS
 
@@ -143,7 +144,10 @@ void app_data_report(void)
 	data_report_t report_data;
     int ret = 0;
     int cnt = 0;
-
+	char current[2];
+	char power[2];
+	char luminance[2];
+	char boardtemp[2];
 	UINT32 msgid;
 	msgid = 0;
 	sprintf(t_report_buf,"%02d", msgid);
@@ -151,16 +155,42 @@ void app_data_report(void)
     report_data.buf = (uint8_t *)s_report_buf;
     report_data.callback = ack_callback;
     report_data.cookie = 0;
+	//this data len is 256
     report_data.len = sizeof(s_report_buf);
     report_data.type = APP_DATA;
     (void)ret;
     while(1)
     {
-
+		//copy the voltage value from BH1750
+		LOG_ARG("BH1750_send.Lux string=0x%x,0x%x,0x%x,0x%x,0x%x",BH1750_send.Lux[0],BH1750_send.Lux[1],BH1750_send.Lux[2],BH1750_send.Lux[3],BH1750_send.Lux[4]);
 		memcpy(t_report_buf + 2, &BH1750_send, sizeof(BH1750_send));	
+		
+
+		
 		report_data.cookie = cnt;
         cnt++;
+		LOG_ARG("strlen(t_report_buf): %02X", strlen(t_report_buf));
+		LOG_ARG("t_report_buf=0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,",t_report_buf[0],t_report_buf[1],t_report_buf[2],t_report_buf[3],t_report_buf[4],t_report_buf[5]);
 		HexStrToStr(t_report_buf,s_report_buf,strlen(t_report_buf));
+		LOG_ARG("s_report_buf=0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,",s_report_buf[0],s_report_buf[1],s_report_buf[2],s_report_buf[3],s_report_buf[4],s_report_buf[5]);
+
+		//copy the current value from constant
+		current[0]=0x01;
+		current[1]=0x01;
+		memcpy(report_data.buf + 3, current, 2);	
+		
+		power[0]=0x02;
+		power[1]=0x02;
+		memcpy(report_data.buf + 5, power, 2);	
+
+		luminance[0]=0x03;
+		luminance[1]=0x03;
+		memcpy(report_data.buf + 7, luminance, 2);
+
+		boardtemp[0]=0x04;
+		boardtemp[1]=0x05;
+		memcpy(report_data.buf + 9, boardtemp, 2);
+		
         ret = atiny_data_report(g_phandle, &report_data);
         ATINY_LOG(LOG_DEBUG, "data report ret: %d\n", ret);
         ret = atiny_data_change(g_phandle, DEVICE_MEMORY_FREE);
