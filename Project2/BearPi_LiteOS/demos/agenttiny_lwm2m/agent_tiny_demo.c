@@ -144,6 +144,7 @@ void app_data_report(void)
 	data_report_t report_data;
     int ret = 0;
     int cnt = 0;
+	char voltage[2];
 	char current[2];
 	char power[2];
 	char luminance[2];
@@ -173,22 +174,33 @@ void app_data_report(void)
 		LOG_ARG("t_report_buf=0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,",t_report_buf[0],t_report_buf[1],t_report_buf[2],t_report_buf[3],t_report_buf[4],t_report_buf[5]);
 		HexStrToStr(t_report_buf,s_report_buf,strlen(t_report_buf));
 		LOG_ARG("s_report_buf=0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,",s_report_buf[0],s_report_buf[1],s_report_buf[2],s_report_buf[3],s_report_buf[4],s_report_buf[5]);
+		luminance[0]=s_report_buf[1];
+		luminance[1]=s_report_buf[2];
 
+		voltage[0]=0x00;
+		voltage[1]=0xDC;
+		memcpy(report_data.buf + 1, voltage, 2);	
+		
+		
 		//copy the current value from constant
-		current[0]=0x01;
-		current[1]=0x01;
+		current[0]=0x00;
+		current[1]=0x02;
 		memcpy(report_data.buf + 3, current, 2);	
 		
-		power[0]=0x02;
-		power[1]=0x02;
+		power[0]=0x01;
+		power[1]=0xB8;
 		memcpy(report_data.buf + 5, power, 2);	
 
-		luminance[0]=0x03;
-		luminance[1]=0x03;
+	
+		//luminance[0]=0x00;
+		//luminance[1]=0x01;
+		
+		LOG_ARG("luminace=0x%x %x", luminance[0],luminance[1]);
 		memcpy(report_data.buf + 7, luminance, 2);
+		LOG_ARG("report_data.buf=0x%x %x", report_data.buf[7],report_data.buf[8]);
 
-		boardtemp[0]=0x04;
-		boardtemp[1]=0x05;
+		boardtemp[0]=0x00;
+		boardtemp[1]=0x18;
 		memcpy(report_data.buf + 9, boardtemp, 2);
 		
         ret = atiny_data_report(g_phandle, &report_data);
