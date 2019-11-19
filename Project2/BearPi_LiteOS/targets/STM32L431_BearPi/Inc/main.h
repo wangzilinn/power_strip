@@ -59,6 +59,7 @@
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
 #define Light_Pin GPIO_PIN_9
+#define CTL_Pin  GPIO_PIN_8
 #define Light_GPIO_Port GPIOB
 #define KEY1_Pin GPIO_PIN_2
 #define KEY1_GPIO_Port GPIOB

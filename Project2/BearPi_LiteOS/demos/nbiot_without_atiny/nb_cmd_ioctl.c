@@ -64,7 +64,8 @@ int32_t nb_cmd_data_ioctl(void* arg, int8_t  * buf, int32_t len)
 					AT_LOG("cmd is:%s\n",bc95_net_data.net_nmgr);
 			if(strcmp(bc95_net_data.net_nmgr,"ON")==0) 
 				{	
-				HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  				
+				//HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  	
+				HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  	
 
 				char* respmsgid = "02";
 				memcpy(s_resp_buf, respmsgid, 2);
@@ -75,7 +76,8 @@ int32_t nb_cmd_data_ioctl(void* arg, int8_t  * buf, int32_t len)
 				}
 			 if (strcmp(bc95_net_data.net_nmgr,"OFF")==0) 
 				{	
-				HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
+				//HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
+				HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_RESET); 
 
 				char* respmsgid = "02";
 				memcpy(s_resp_buf, respmsgid, 2);
