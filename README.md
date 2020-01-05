@@ -10,8 +10,10 @@
 ## iot
 
 # 目录
-code为包括app和bootloader的工程文件
-release为先烧后读，运行OK的代码
+## code
+为包括app和bootloader的工程文件
+## release
+为先烧后读，运行OK的代码，建议使用STM32 ST-LINK Utility
 
 # 要求
 LiteOS Studio的版本应该为0.3.0.0
