@@ -4,3 +4,6 @@
 # 目录
 code为包括app和bootloader的工程文件
 release为先烧后读，运行OK的代码
+
+# 要求
+LiteOS Studio的版本应该为0.3.0.0
