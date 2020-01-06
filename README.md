@@ -16,7 +16,8 @@
 为先烧后读，运行OK的代码，建议使用STM32 ST-LINK Utility
 
 # 要求
-LiteOS Studio的版本应该为0.3.0.0
+LiteOS Studio的版本应该为0.3.0.0 
+[https://pan.baidu.com/s/1svR2rkXmzoFKgjJL-we08g](https://pan.baidu.com/s/1svR2rkXmzoFKgjJL-we08g)
 
 # 20200105
 .icode为LiteOS Studio的工程配置文件，不需要了，每次按照导入工程进行配置即可。
