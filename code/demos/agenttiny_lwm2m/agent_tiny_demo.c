@@ -109,7 +109,8 @@ VOID app_data_report_collection(VOID)
 	while (1)
   {
 
-		Lux=(int)Convert_BH1750();	
+		//Lux=(int)Convert_BH1750();
+        Lux++;	
 		printf("\r\n******************************BH1750 Value is  %d\r\n",Lux);
 		LCD_ShowString(10, 200, 200, 16, 16, "BH1750 Value is:");
 		LCD_ShowNum(140, 200, Lux, 5, 16);
