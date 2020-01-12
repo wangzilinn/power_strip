@@ -99,6 +99,46 @@ void ack_callback(atiny_report_type_e type, int cookie, data_send_status_e statu
 {
     ATINY_LOG(LOG_DEBUG, "type:%d cookie:%d status:%d\n", type, cookie, status);
 }
+extern void process_hlw8032_data(void);
+extern unsigned char hlw8032_raw[48]; 
+
+UINT8 hlw8032_real_data[24];
+int vol;
+float cur;
+char voltage[2];
+char current[2];
+char power[2];
+char luminance[2];
+char boardtemp[2];
+UINT8 pre_data;
+UINT8 cur_data;
+UINT8 start_index;
+
+void hlw8032_data_handling(UINT8 *pData, UINT8 Size)
+{
+	unsigned int i;
+	for(i=0;i<Size;i++)
+	{
+		pre_data=cur_data;
+		cur_data=pData[i];
+		if((0x55==pre_data)&&(0x5a==cur_data))
+		{
+			start_index=i-1;
+			printf("start_index=%d\r\n",start_index);
+			memcpy(hlw8032_real_data,pData+start_index,24);
+			printf("hlw8032_real_data1 %2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,\r\n",hlw8032_real_data[0],hlw8032_real_data[1],hlw8032_real_data[2],hlw8032_real_data[3],hlw8032_real_data[4],hlw8032_real_data[5],hlw8032_real_data[6],hlw8032_real_data[7],hlw8032_real_data[8],hlw8032_real_data[9],hlw8032_real_data[10],hlw8032_real_data[11]);
+			printf("hlw8032_real_data2 %2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,%2x,\r\n",hlw8032_real_data[12],hlw8032_real_data[13],hlw8032_real_data[14],hlw8032_real_data[15],hlw8032_real_data[16],hlw8032_real_data[17],hlw8032_real_data[18],hlw8032_real_data[19],hlw8032_real_data[20],hlw8032_real_data[21],hlw8032_real_data[22],hlw8032_real_data[23]);
+			vol=((hlw8032_real_data[2]*65536+hlw8032_real_data[3]*256+hlw8032_real_data[4])*1.88/(hlw8032_real_data[5]*65536+hlw8032_real_data[6]*256+hlw8032_real_data[7]));
+			printf("vol=%d\r\n",vol);
+
+			cur=((hlw8032_real_data[8]*65536+hlw8032_real_data[9]*256+hlw8032_real_data[10])*1/(hlw8032_real_data[11]*65536+hlw8032_real_data[12]*256+hlw8032_real_data[13]));
+			printf("cur=%d\r\n",cur);
+			
+			break;
+		}
+	}
+}
+
 
 VOID app_data_report_collection(VOID)
 {
@@ -108,9 +148,11 @@ VOID app_data_report_collection(VOID)
 	Init_BH1750();									
 	while (1)
   {
-
-		//Lux=(int)Convert_BH1750();
-        Lux++;	
+		process_hlw8032_data();
+		hlw8032_data_handling(hlw8032_raw,48);
+		
+		Lux=(int)Convert_BH1750();
+        //Lux++;	
 		printf("\r\n******************************BH1750 Value is  %d\r\n",Lux);
 		LCD_ShowString(10, 200, 200, 16, 16, "BH1750 Value is:");
 		LCD_ShowNum(140, 200, Lux, 5, 16);
@@ -145,11 +187,7 @@ void app_data_report(void)
 	data_report_t report_data;
     int ret = 0;
     int cnt = 0;
-	char voltage[2];
-	char current[2];
-	char power[2];
-	char luminance[2];
-	char boardtemp[2];
+	
 	UINT32 msgid;
 	msgid = 0;
 	sprintf(t_report_buf,"%02d", msgid);
@@ -179,13 +217,15 @@ void app_data_report(void)
 		luminance[1]=s_report_buf[2];
 
 		voltage[0]=0x00;
-		voltage[1]=0xDC;
+		//voltage[1]=0xDC;
+		voltage[1]=vol;
 		memcpy(report_data.buf + 1, voltage, 2);	
 		
 		
 		//copy the current value from constant
 		current[0]=0x00;
-		current[1]=0x02;
+		//current[1]=0x02;
+		current[1]=cur;
 		memcpy(report_data.buf + 3, current, 2);	
 		
 		power[0]=0x01;

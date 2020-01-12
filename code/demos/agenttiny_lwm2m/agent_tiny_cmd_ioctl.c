@@ -276,30 +276,30 @@ int atiny_write_app_write(void *user_data, int len)
 	atiny_str_to_hex(cmd_data,len,tmpbuf);
 	memcpy(recvmid,tmpbuf + 2, 4);
 
-			if(cmd_data[3]==0x4F && cmd_data[4]==0x4E) //??  ON
-				{	
-				//HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  				
-				HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  
+	if(cmd_data[3]==0x4F && cmd_data[4]==0x4E) //??  ON
+	{	
+		HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  				
+		HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  
 
-				char* respmsgid = "02";
-				memcpy(s_resp_buf, respmsgid, 2);
-				memcpy(s_resp_buf + 2, recvmid, 4);
-				char* reply = "0001";
-				memcpy(s_resp_buf + 6, reply, 4);
-				LOS_SemPost(reply_sem);
-				}
-			 if (cmd_data[3]==0x4F && cmd_data[4]==0x46 && cmd_data[5]==0x46) //OFF
-				{	
-				//HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
-				HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
+		char* respmsgid = "02";
+		memcpy(s_resp_buf, respmsgid, 2);
+		memcpy(s_resp_buf + 2, recvmid, 4);
+		char* reply = "0001";
+		memcpy(s_resp_buf + 6, reply, 4);
+		LOS_SemPost(reply_sem);
+	}
+	 if (cmd_data[3]==0x4F && cmd_data[4]==0x46 && cmd_data[5]==0x46) //OFF
+	{	
+		HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
 
-				char* respmsgid = "02";
-				memcpy(s_resp_buf, respmsgid, 2);
-				memcpy(s_resp_buf + 2, recvmid, 4);
-				char* reply = "0000";
-				memcpy(s_resp_buf + 6, reply, 4);
-				LOS_SemPost(reply_sem);
-				}
+		char* respmsgid = "02";
+		memcpy(s_resp_buf, respmsgid, 2);
+		memcpy(s_resp_buf + 2, recvmid, 4);
+		char* reply = "0000";
+		memcpy(s_resp_buf + 6, reply, 4);
+		LOS_SemPost(reply_sem);
+	}
 	
 	(void)atiny_printf("write num19 object success\r\n");
     return ATINY_OK;

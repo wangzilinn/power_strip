@@ -43,12 +43,22 @@
 char s_resp_buf[14] = {0};
 uint32_t reply_sem;
 msg_for_BH1750 BH1750_send;
+
+#define BUFFER_SIZE  480 
+unsigned char flag=0;  
+unsigned char xtemp[BUFFER_SIZE]; 
+unsigned char ytemp[BUFFER_SIZE]; 
+
+unsigned char hlw8032_raw[48]; 
+
+
 VOID HardWare_Init(VOID)
 {
 	HAL_Init();
 	/* Configure the system clock */
 	SystemClock_Config();
 	MX_GPIO_Init();
+    MX_USART3_UART_Init();
 	MX_I2C1_Init();
 	MX_USART1_UART_Init();
 	MX_SPI2_Init();
@@ -61,7 +71,39 @@ VOID HardWare_Init(VOID)
 	LCD_ShowString(20, 130, 240, 16, 16, "Powerd by Huawei LiteOS!");
 	LCD_ShowString(10, 170, 240, 16, 16, "Please wait for system init");
 }
+/* mux handle id */
 
+static UINT32 g_Testmux01_hlw8032;
+
+
+void process_hlw8032_data(void)
+{
+	UINT32 uwIntSave;
+	printf("enter %s \r\n",__FUNCTION__);
+	memset(xtemp,0,24);
+	__HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_PE);
+	__HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_FE);
+	__HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_NE);
+	__HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_ORE);
+	
+	//uwIntSave = LOS_IntLock();
+	//HAL_UART_Receive(&huart3,xtemp,24,5);
+	//LOS_IntRestore(uwIntSave);
+
+	/* get mux */
+    uwIntSave = LOS_MuxPend(g_Testmux01_hlw8032, LOS_WAIT_FOREVER);
+	
+	HAL_UART_Receive(&huart3,xtemp,48,1000);
+	memcpy(hlw8032_raw,xtemp,48);
+	 /* release mux */
+	LOS_MuxPost(g_Testmux01_hlw8032);
+	
+	printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",xtemp[0],xtemp[1],xtemp[2],xtemp[3],xtemp[4],xtemp[5],xtemp[6],xtemp[7],xtemp[8],xtemp[9],xtemp[10],xtemp[11]);
+	printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",xtemp[12],xtemp[13],xtemp[14],xtemp[15],xtemp[16],xtemp[17],xtemp[18],xtemp[19],xtemp[20],xtemp[21],xtemp[22],xtemp[23]);
+	printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",xtemp[24],xtemp[25],xtemp[26],xtemp[27],xtemp[28],xtemp[29],xtemp[30],xtemp[31],xtemp[32],xtemp[33],xtemp[34],xtemp[35]);
+	printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",xtemp[36],xtemp[37],xtemp[38],xtemp[39],xtemp[40],xtemp[41],xtemp[42],xtemp[43],xtemp[44],xtemp[45],xtemp[46],xtemp[47]);
+
+}
 int main(void)
 {
     UINT32 uwRet = LOS_OK;
