@@ -3,6 +3,16 @@
 中文名“排插”，插线板。
 源于排插串接，排插覆盖，排插老化等现实问题的困扰，从location-aware energy dissaggregation的科学问题入手，深入研究。
 
+# 现有功能
+## 电测量
+## OTA 同时解决 wifi配置和模型升级
+# 未来功能
+## 增加暂态特性数据
+## NN迁移到MCU
+## kws-for-mcu玩法
+## 针对NILM场景的功能增加
+
+
 # 学术问题
 ## energy dissaggregation
 ## location
