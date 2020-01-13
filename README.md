@@ -17,7 +17,6 @@
 ## energy dissaggregation
 ## location
 ## forecasting
-## iot
 
 # 目录
 ## code
