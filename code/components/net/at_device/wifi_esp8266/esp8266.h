@@ -36,8 +36,8 @@
 
 #include "at_frame/at_main.h"
 
-#define WIFI_SSID      		"zy202"//#define WIFI_SSID      		"Hold"
-#define WIFI_PASSWD    		"wsn405405"//#define WIFI_PASSWD    		"0987654321"
+#define WIFI_SSID      		"FAST_D0459A"//"zy202"//#define WIFI_SSID      		"Hold"
+#define WIFI_PASSWD    		"xiejin19860617"//"wsn405405"//#define WIFI_PASSWD    		"0987654321"
 //#define WIFI_SSID      		"1004"
 //#define WIFI_PASSWD    		"123456789"
 

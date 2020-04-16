@@ -36,6 +36,10 @@
 #include "agent_tiny_demo.h"
 #include "bh1750.h"
 #include "lcd.h"
+#include "adc.h"
+#include "LM75AD.h"
+#include "stm32l4xx_hal.h"
+
 
 #if defined WITH_AT_FRAMEWORK
 #include "at_frame/at_api.h"
@@ -144,8 +148,21 @@ VOID app_data_report_collection(VOID)
 {
 	UINT32 uwRet = LOS_OK;
 	
-	short int Lux;  
-	Init_BH1750();									
+	short int Lux; 
+
+    uint16_t ADCvalue=0;
+	float Voltage=0.0f;
+	float Rest=0.0f;
+    char str[10]={0};
+    uint16_t intv;
+
+    float temp;
+    uint16_t  temp2; 
+
+	MX_ADC1_Init();
+	Init_BH1750();	
+    LM75AD_Init();		
+
 	while (1)
   {
 		process_hlw8032_data();
@@ -156,7 +173,38 @@ VOID app_data_report_collection(VOID)
 		printf("\r\n******************************BH1750 Value is  %d\r\n",Lux);
 		LCD_ShowString(10, 200, 200, 16, 16, "BH1750 Value is:");
 		LCD_ShowNum(140, 200, Lux, 5, 16);
-		sprintf(BH1750_send.Lux,"%04X", Lux);	  
+		sprintf(BH1750_send.Lux,"%04X", Lux);	
+
+       // temp=LM75_Temp();
+       temp =123.45;
+        temp2= temp;
+        printf("LM75temp：%d.",temp2);
+        temp2 = (temp -temp2)*100;
+        printf("%d\r\n",temp2);
+
+        # if 1     
+        HAL_ADC_Start(&hadc1);
+		HAL_ADC_PollForConversion(&hadc1,50);
+		if(HAL_IS_BIT_SET(HAL_ADC_GetState(&hadc1),HAL_ADC_STATE_REG_EOC))
+		{
+			ADCvalue =  HAL_ADC_GetValue(&hadc1);
+            Voltage=ADCvalue*3.3/4096;//2^12=4096	
+            printf("\r\n #########################\r\n");
+             // Voltage=Voltage*1000;
+             intv = Voltage*1000;
+             printf("\r\n ADCValue:%d,Voltage: %d \r\n",ADCvalue,intv);//打印转换数据和换算电压
+           // sprintf(str, "%f", Voltage);	
+         //  printf("\r\n ADCValue:%d,Voltage: %s \r\n",ADCvalue,str);//打印转换数据和换算电压
+            Rest = Voltage*10/(3.3-Voltage);
+            intv = Rest*1000;
+             printf("\r\n Rest: %d \r\n",intv);
+           // sprintf(str, "%f", Rest);
+           //printf("\r\n Rest: %sK \r\n",str);
+		}
+
+
+        # endif
+
 		uwRet=LOS_TaskDelay(2000);
 		if(uwRet !=LOS_OK)
 		return;

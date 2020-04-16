@@ -39,6 +39,7 @@
 #include "lcd.h"
 #include "bh1750.h"
 
+
 #define OCEAN_IP "49.4.85.232"
 #define SECURITY_PORT "5684"
 #define NON_SECURITY_PORT "5683"
@@ -113,15 +114,19 @@ VOID data_collection_task(VOID)
 	UINT32 uwRet = LOS_OK;
 	
 	short int Lux;  
+
 	Init_BH1750();									
 	while (1)
   {
 
 		Lux=(int)Convert_BH1750();		
-		printf("\r\n******************************BH1750 Value is  %d\r\n",Lux);
+		printf("\r\n*************1****************BH1750 Value is  %d\r\n",Lux);
 		LCD_ShowString(10, 200, 200, 16, 16, "BH1750 Value is:");
 		LCD_ShowNum(140, 200, Lux, 5, 16);
 		sprintf(BH1750_send.Lux,"%04X", Lux);	  //将传感器数据存入发送数据的结构体中
+
+
+          
 		uwRet=LOS_TaskDelay(2000);
 		if(uwRet !=LOS_OK)
 		return;
@@ -151,7 +156,10 @@ VOID data_report_task(VOID)
 	UINT32 uwRet = LOS_OK;
 	UINT32 msglen = 0;
 	UINT32 msgid;
-		while(1)
+
+
+
+	while(1)
 	{
 
 			msgid = 0;

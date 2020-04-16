@@ -105,6 +105,7 @@ HARDWARE_SRC =  \
         $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/Src/hal_iwdg.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/Src/hal_rng.c \
 	$(TOP_DIR)/targets/STM32L431_BearPi/Hardware/BH1750/BH1750.c \
+        $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/LM75AD/LM75AD.c \
 	$(TOP_DIR)/targets/STM32L431_BearPi/Hardware/LCD/lcd.c
         C_SOURCES += $(HARDWARE_SRC)
 		
@@ -200,6 +201,7 @@ USER_SRC =  \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/i2c.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/spi.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/gpio.c \
+        $(TOP_DIR)/targets/STM32L431_BearPi/Src/adc.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/user_task.c
         C_SOURCES += $(USER_SRC)
 
@@ -404,6 +406,7 @@ LWM2M_ATINY_INC = \
 HARDWARE_INC = \
         -I $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/Inc \
         -I $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/BH1750 \
+         -I $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/LM75AD \
         -I $(TOP_DIR)/targets/STM32L431_BearPi/Hardware/LCD
         C_INCLUDES += $(HARDWARE_INC)
 

@@ -42,7 +42,7 @@
 #define __MAIN_H__
 
 /* Includes LiteOS------------------------------------------------------------------*/
-
+#include <stdbool.h>
 #include "los_base.h"
 #include "los_config.h"
 #include "los_sys.h"
@@ -55,18 +55,37 @@
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
-
-#define LED_Pin GPIO_PIN_13
-#define LED_GPIO_Port GPIOC
-#define Light_Pin GPIO_PIN_9
-#define CTL_Pin  GPIO_PIN_8
 #define Light_GPIO_Port GPIOB
-#define KEY1_Pin GPIO_PIN_2
-#define KEY1_GPIO_Port GPIOB
-#define KEY1_EXTI_IRQn EXTI2_IRQn
-#define KEY2_Pin GPIO_PIN_3
-#define KEY2_GPIO_Port GPIOB
-#define KEY2_EXTI_IRQn EXTI3_IRQn
+#define Light_Pin GPIO_PIN_9
+
+#define CTL_GPIO_Port  GPIOB
+#define CTL_Pin  GPIO_PIN_8
+
+#define TPIN_GPIO_Port GPIOB
+#define TPIN_Pin GPIO_PIN_2
+
+#define USBEN_GPIO_Port GPIOB
+#define USBEN_Pin GPIO_PIN_4
+
+#define LED_GPIO_Port GPIOC
+#define LED_Pin GPIO_PIN_13
+
+#define OVERCRENT_GPIO_Port GPIOC
+#define OVERCRENT_Pin GPIO_PIN_10
+
+#define BEEP_GPIO_Port GPIOB
+#define BEEP_Pin GPIO_PIN_3
+
+//#define KEY1_Pin GPIO_PIN_2
+//#define KEY1_GPIO_Port GPIOB
+//#define KEY1_EXTI_IRQn EXTI2_IRQn
+//#define KEY2_Pin GPIO_PIN_3
+//#define KEY2_GPIO_Port GPIOB
+//#define KEY2_EXTI_IRQn EXTI3_IRQn
+
+
+bool CTL_ON;
+void beep_waming(unsigned char kind, unsigned char time);  // 报警类型 次数
 
 /* ########################## Assert Selection ############################## */
 /**

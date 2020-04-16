@@ -40,6 +40,9 @@
 #include "los_typedef.h"
 #include "los_sys.h"
 
+
+static UINT32 s_uwTskID1;    
+
 char s_resp_buf[14] = {0};
 uint32_t reply_sem;
 msg_for_BH1750 BH1750_send;
@@ -60,6 +63,7 @@ VOID HardWare_Init(VOID)
 	MX_GPIO_Init();
     MX_USART3_UART_Init();
 	MX_I2C1_Init();
+    MX_I2C1_Init();
 	MX_USART1_UART_Init();
 	MX_SPI2_Init();
 	dwt_delay_init(SystemCoreClock);
@@ -104,10 +108,143 @@ void process_hlw8032_data(void)
 	printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",xtemp[36],xtemp[37],xtemp[38],xtemp[39],xtemp[40],xtemp[41],xtemp[42],xtemp[43],xtemp[44],xtemp[45],xtemp[46],xtemp[47]);
 
 }
+
+//***********触摸控制任务*****************
+static VOID * Touch_Task(UINT32 uwArg)
+{
+    const CHAR *pcTaskName = " Touch_Task is running\r\n";
+    while(1)
+    {
+       if(HAL_GPIO_ReadPin(TPIN_GPIO_Port, TPIN_Pin)==GPIO_PIN_SET)//触摸是否高电平
+       {
+           beep_waming(3,1);
+           while(HAL_GPIO_ReadPin(TPIN_GPIO_Port, TPIN_Pin)==GPIO_PIN_SET)
+           {
+                LOS_TaskDelay(20);
+           }
+
+           if(CTL_ON == true)
+           {
+                HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
+                HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);  
+                HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_RESET);
+                CTL_ON = false;
+           }
+           else
+           {
+               	HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  
+                HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);  
+                HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_SET);
+                CTL_ON = true;
+           }
+           
+           /*
+            HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
+            HAL_GPIO_TogglePin(CTL_GPIO_Port, CTL_Pin); //继电器开断
+            HAL_GPIO_TogglePin(USBEN_GPIO_Port, USBEN_Pin); //usb插口开断
+             printf("\r\n Key1 presed!\r\n");
+            */
+           LOS_TaskDelay(20); 
+        
+       }
+
+
+       if(CTL_ON == true )  
+       {
+            if(HAL_GPIO_ReadPin(OVERCRENT_GPIO_Port, OVERCRENT_Pin)==GPIO_PIN_SET) //过流断开
+            {
+                HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
+                HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);  
+                HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_RESET);
+                CTL_ON = false;
+                beep_waming(2,20);
+            }
+       }
+
+         LOS_TaskDelay(5);
+
+
+    }
+}
+
+
+
+UINT32 Touch_Entry(VOID) {
+    UINT32 uwRet = LOS_OK;
+    TSK_INIT_PARAM_S stInitParam = {0};
+    
+    printf("Touch_Entry\r\n");
+    stInitParam.pfnTaskEntry = Touch_Task;
+    stInitParam.pcName = "Task1";
+    uwRet = LOS_TaskCreate(&s_uwTskID1, &stInitParam);
+    if (uwRet != LOS_OK) {
+        printf("Touch_Task create Failed!\r\n");
+        return LOS_NOK;
+    }
+
+    return uwRet;
+}
+
+void beep_waming(unsigned char kind, unsigned char time)  // 报警类型 次数
+{
+    unsigned char i;
+    switch(kind)
+    {
+        case 0:
+          for(i=0; i<time; i++)
+          {
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(200);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(200);
+          }
+        break;
+        case 1:
+          for(i=0; i<time; i++)
+          {
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(500);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(200);
+          }
+        break;
+        case 2:
+          for(i=0; i<time; i++)
+          {
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(200);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(50);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(200);
+             HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(50);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(500);
+             HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(50);
+          }
+        break;
+        case 3:
+          for(i=0; i<time; i++)
+          {
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_SET);
+            LOS_TaskDelay(100);
+            HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
+            LOS_TaskDelay(100);
+          }
+
+
+
+    }
+}
+
+
 int main(void)
 {
     UINT32 uwRet = LOS_OK;
     HardWare_Init();
+
     uwRet = LOS_KernelInit();
     if (uwRet != LOS_OK)
     {
@@ -121,7 +258,8 @@ int main(void)
         return LOS_NOK;
     }
 
-
+    Touch_Entry(); 
     (void)LOS_Start();
+
     return 0;
 }

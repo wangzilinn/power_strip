@@ -278,8 +278,11 @@ int atiny_write_app_write(void *user_data, int len)
 
 	if(cmd_data[3]==0x4F && cmd_data[4]==0x4E) //??  ON
 	{	
-		HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  				
-		HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  
+	//	HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_SET);  				
+		HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_SET);  
+        HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);  
+        HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_SET);
+        CTL_ON = true;
 
 		char* respmsgid = "02";
 		memcpy(s_resp_buf, respmsgid, 2);
@@ -290,8 +293,11 @@ int atiny_write_app_write(void *user_data, int len)
 	}
 	 if (cmd_data[3]==0x4F && cmd_data[4]==0x46 && cmd_data[5]==0x46) //OFF
 	{	
-		HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
-		HAL_GPIO_WritePin(Light_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
+	//	HAL_GPIO_WritePin(Light_GPIO_Port,Light_Pin,GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
+        HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);  
+        HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_RESET);
+        CTL_ON = false;
 
 		char* respmsgid = "02";
 		memcpy(s_resp_buf, respmsgid, 2);

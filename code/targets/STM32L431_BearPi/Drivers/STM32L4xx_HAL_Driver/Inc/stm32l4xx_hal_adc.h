@@ -44,6 +44,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal_def.h"
 
+
 /* Include low level driver */
 #include "stm32l4xx_ll_adc.h"
 

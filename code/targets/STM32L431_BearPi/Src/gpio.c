@@ -69,18 +69,45 @@ void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(Light_GPIO_Port, Light_Pin, GPIO_PIN_RESET);
-	//CTL_Pin
-	HAL_GPIO_WritePin(Light_GPIO_Port, CTL_Pin, GPIO_PIN_RESET);
 
-	/*Configure GPIO pin : PtPin */
-	//GPIO_InitStruct.Pin = Light_Pin; //CTL_Pin
-	GPIO_InitStruct.Pin = CTL_Pin|Light_Pin; //CTL_Pin
+ /*Configure GPIO pins :CTL_Pin*/
+  GPIO_InitStruct.Pin = CTL_Pin;
+  GPIO_InitStruct.Mode =  GPIO_MODE_OUTPUT_PP;
+  HAL_GPIO_Init( CTL_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_WritePin(CTL_GPIO_Port, CTL_Pin, GPIO_PIN_RESET);
+  CTL_ON = false;
 
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(Light_GPIO_Port, &GPIO_InitStruct);
+
+
+  /*Configure GPIO pins :¥•√˛ ‰»Î*/
+  GPIO_InitStruct.Pin = TPIN_Pin;
+  GPIO_InitStruct.Mode =  GPIO_MODE_INPUT;
+  HAL_GPIO_Init( TPIN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins :led*/
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode =  GPIO_MODE_OUTPUT_PP;
+  HAL_GPIO_Init( LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pins :USBEN*/
+  GPIO_InitStruct.Pin = USBEN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init( USBEN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(USBEN_GPIO_Port,USBEN_Pin,GPIO_PIN_RESET);  
+
+
+  /*Configure GPIO pins :OVERCREN*/
+  GPIO_InitStruct.Pin = OVERCRENT_Pin;
+  GPIO_InitStruct.Mode =  GPIO_MODE_INPUT;
+  HAL_GPIO_Init( OVERCRENT_GPIO_Port, &GPIO_InitStruct);
+
+ /*Configure GPIO pins :BEEP*/
+  GPIO_InitStruct.Pin = BEEP_Pin;
+  GPIO_InitStruct.Mode =  GPIO_MODE_OUTPUT_PP;
+  HAL_GPIO_Init( BEEP_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin , GPIO_PIN_RESET);
 
 
 }
