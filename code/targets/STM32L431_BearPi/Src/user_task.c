@@ -31,7 +31,6 @@
  * Import, export and usage of Huawei LiteOS in any manner by you shall be in compliance with such
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
-
 #include "sys_init.h"
 #ifdef CONFIG_FEATURE_FOTA
 #include "ota_port.h"
@@ -49,6 +48,8 @@
 
 
 static UINT32 g_atiny_tskHandle;
+// 神经网络任务全局句柄
+static UINT32 g_NN_tskHandle;
 
 
 
@@ -119,7 +120,7 @@ void atiny_task_entry(void)
 }
 
 
-UINT32 creat_agenttiny_task(VOID)
+UINT32 create_agenttiny_task(VOID)
 {
     UINT32 uwRet = LOS_OK;
     TSK_INIT_PARAM_S task_init_param;
@@ -141,10 +142,36 @@ UINT32 creat_agenttiny_task(VOID)
     }
     return uwRet;
 }
+//神经网络任务入口
+void NN_task_entry(void)
+{
+    while(1)
+    {
+        printf("running NN task....");
+        atiny_delay(4);
+    }
+}
+// 创建神经网络任务
+UINT32 create_NN_task(VOID)
+{
+    UINT32 uwRet = LOS_OK;
+    TSK_INIT_PARAM_S task_init_param;
 
+    task_init_param.usTaskPrio = 4;
+    task_init_param.pcName = "NN_task";
+    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)NN_task_entry;
+    task_init_param.uwStackSize = 0x1800;
 
-//UINT32 creat_fs_task(void)
-//{
+    uwRet = LOS_TaskCreate(&g_NN_tskHandle, &task_init_param);
+    if(LOS_OK != uwRet)
+    {
+        return uwRet;
+    }
+    return uwRet;
+}
+
+// UINT32 creat_fs_task(void)
+// {
 //    UINT32 uwRet = LOS_OK;
 //    TSK_INIT_PARAM_S task_init_param;
 
@@ -162,7 +189,7 @@ UINT32 creat_agenttiny_task(VOID)
 //        return uwRet;
 //    }
 //    return uwRet;
-//}
+// }
 
 
 
@@ -189,12 +216,17 @@ uint32_t create_dtls_server_task()
 }
 #endif
 
-
+// 操作系统创建任务总入口:
 UINT32 create_work_tasks(VOID)
 {
     UINT32 uwRet = LOS_OK;
 
-    uwRet = creat_agenttiny_task();
+    uwRet = create_agenttiny_task();
+    if (uwRet != LOS_OK)
+    {
+    	return LOS_NOK;
+    }
+    uwRet = create_NN_task();//创建NN任务
     if (uwRet != LOS_OK)
     {
     	return LOS_NOK;
