@@ -44,17 +44,81 @@
 #else
 #include "agenttiny_lwm2m/agent_tiny_demo.h"
 #endif
+/*
+ * 全局变量定义
+ */
+static UINT32 g_atiny_tskHandle; // atiny任务全局句柄
 
+static UINT32 g_NN_tskHandle; // 神经网络任务全局句柄
 
+/**
+ * 函数声明:
+ */
+UINT32 create_work_tasks(VOID);
 
-static UINT32 g_atiny_tskHandle;
-// 神经网络任务全局句柄
-static UINT32 g_NN_tskHandle;
+UINT32 create_agenttiny_task(VOID);
 
+void atiny_task_entry(void);
 
+UINT32 create_NN_task(VOID);
 
+void NN_task_entry(void);
 
+uint32_t create_dtls_server_task();
 
+/**
+ * 函数定义:
+ */
+
+/**
+ * @Description: 操作系统创建所有任务总入口:
+ * @param {type} 
+ * @return: 
+ * @Author: 
+ * @Date: 2020-04-22 00:41:32
+ * @LastEditors: Wang Zilin
+ */
+UINT32 create_work_tasks(VOID)
+{
+    UINT32 uwRet = LOS_OK;
+
+    uwRet = create_agenttiny_task();
+    if (uwRet != LOS_OK)
+    {
+        return LOS_NOK;
+    }
+    uwRet = create_NN_task(); //创建NN任务
+    if (uwRet != LOS_OK)
+    {
+        return LOS_NOK;
+    }
+
+#if defined(USE_PPPOS)
+#include "osport.h"
+    extern void uart_init(void); //this uart used for the pppos interface
+    uart_init();
+    extern VOID *main_ppp(UINT32 args);
+    task_create("main_ppp", main_ppp, 0x1500, NULL, NULL, 2);
+#endif
+
+#if defined(WITH_DTLS) && defined(SUPPORT_DTLS_SRV)
+    uwRet = create_dtls_server_task() if (uwRet != LOS_OK)
+    {
+        return LOS_NOK;
+    }
+#endif
+
+    return uwRet;
+}
+
+/**
+ * @Description: atiny任务入口
+ * @param {type} 
+ * @return: 
+ * @Author: 
+ * @Date: 2020-04-22 00:08:26
+ * @LastEditors: Wang Zilin
+ */
 void atiny_task_entry(void)
 {
     extern void agent_tiny_entry();
@@ -63,39 +127,39 @@ void atiny_task_entry(void)
     net_init();
 #elif defined(WITH_AT_FRAMEWORK)
 
-
-    #if defined(USE_ESP8266)
+//使用了这个模块
+#if defined(USE_ESP8266)
     extern at_adaptor_api esp8266_interface;
     printf("\r\n=============agent_tiny_entry  USE_ESP8266============================\n");
     at_api_register(&esp8266_interface);
 
-    #elif defined(USE_EMTC_BG36)
+#elif defined(USE_EMTC_BG36)
     extern at_adaptor_api emtc_bg36_interface;
     printf("\r\n=============agent_tiny_entry  USE_EMTC_BG36============================\n");
     at_api_register(&emtc_bg36_interface);
 
-    #elif defined(USE_SIM900A)
+#elif defined(USE_SIM900A)
     extern at_adaptor_api sim900a_interface;
     printf("\r\n=============agent_tiny_entry  USE_SIM900A============================\n");
     at_api_register(&sim900a_interface);
-		
-		#elif defined(USE_M26)
+
+#elif defined(USE_M26)
     extern at_adaptor_api m26_interface;
     printf("\r\n=============agent_tiny_entry  USE_M26============================\n");
     at_api_register(&m26_interface);
 
-    #elif defined(USE_NB_NEUL95)
+#elif defined(USE_NB_NEUL95)
     extern at_adaptor_api bc95_interface;
     printf("\r\n=============agent_tiny_entry  USE_NB_NEUL95============================\n");
-    los_nb_init((const int8_t *)"49.4.85.232",(const int8_t *)"5683",NULL);
-    los_nb_notify("\r\n+NSONMI:",strlen("\r\n+NSONMI:"),NULL,nb_cmd_match);
+    los_nb_init((const int8_t *)"49.4.85.232", (const int8_t *)"5683", NULL);
+    los_nb_notify("\r\n+NSONMI:", strlen("\r\n+NSONMI:"), NULL, nb_cmd_match);
     at_api_register(&bc95_interface);
 
-    #elif defined(USE_NB_NEUL95_NO_ATINY)
+#elif defined(USE_NB_NEUL95_NO_ATINY)
     demo_nbiot_only();
-    #else
+#else
 
-    #endif
+#endif
 #else
 #endif
 
@@ -110,7 +174,6 @@ void atiny_task_entry(void)
     }
 #endif
 
-
 #if !defined(USE_NB_NEUL95_NO_ATINY)
 #ifdef CONFIG_FEATURE_FOTA
     hal_init_ota();
@@ -119,7 +182,14 @@ void atiny_task_entry(void)
 #endif
 }
 
-
+/**
+ * @Description: 创建agenttiny任务
+ * @param {type} 
+ * @return: 
+ * @Author: Wang Zilin
+ * @Date: 2020-04-22 00:42:10
+ * @LastEditors: Wang Zilin
+ */
 UINT32 create_agenttiny_task(VOID)
 {
     UINT32 uwRet = LOS_OK;
@@ -136,22 +206,38 @@ UINT32 create_agenttiny_task(VOID)
 #endif
 
     uwRet = LOS_TaskCreate(&g_atiny_tskHandle, &task_init_param);
-    if(LOS_OK != uwRet)
+    if (LOS_OK != uwRet)
     {
         return uwRet;
     }
     return uwRet;
 }
-//神经网络任务入口
+
+/**
+ * @Description: 神经网络任务入口
+ * @param {type} 
+ * @return: 
+ * @Author: Wang Zilin
+ * @Date: 2020-04-22 00:42:33
+ * @LastEditors: Wang Zilin
+ */
 void NN_task_entry(void)
 {
-    while(1)
+    while (1)
     {
-        printf("running NN task....");
+        printf("running NN task....\n");
         atiny_delay(4);
     }
 }
-// 创建神经网络任务
+
+/**
+ * @Description: 创建神经网络任务
+ * @param {type} 
+ * @return: 
+ * @Author: Wang Zilin
+ * @Date: 2020-04-22 00:42:54
+ * @LastEditors: Wang Zilin
+ */
 UINT32 create_NN_task(VOID)
 {
     UINT32 uwRet = LOS_OK;
@@ -163,13 +249,21 @@ UINT32 create_NN_task(VOID)
     task_init_param.uwStackSize = 0x1800;
 
     uwRet = LOS_TaskCreate(&g_NN_tskHandle, &task_init_param);
-    if(LOS_OK != uwRet)
+    if (LOS_OK != uwRet)
     {
         return uwRet;
     }
     return uwRet;
 }
 
+/**
+ * @Description: 创建fs任务
+ * @param {type} 
+ * @return: 
+ * @Author: 
+ * @Date: 2020-04-22 00:43:54
+ * @LastEditors: Wang Zilin
+ */
 // UINT32 creat_fs_task(void)
 // {
 //    UINT32 uwRet = LOS_OK;
@@ -179,7 +273,6 @@ UINT32 create_NN_task(VOID)
 //    task_init_param.pcName = "main_task";
 //    extern void fs_demo(void);
 //    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)fs_demo;
-
 
 //    task_init_param.uwStackSize = 0x1000;
 
@@ -191,8 +284,14 @@ UINT32 create_NN_task(VOID)
 //    return uwRet;
 // }
 
-
-
+/**
+ * @Description: 创建dtls任务
+ * @param {type} 
+ * @return: 
+ * @Author: 
+ * @Date: 2020-04-22 00:43:18
+ * @LastEditors: Wang Zilin
+ */
 #if defined(WITH_DTLS) && defined(SUPPORT_DTLS_SRV)
 static UINT32 g_dtls_server_tskHandle;
 uint32_t create_dtls_server_task()
@@ -208,51 +307,10 @@ uint32_t create_dtls_server_task()
     task_init_param.uwStackSize = 0x1000;
 
     uwRet = LOS_TaskCreate(&g_dtls_server_tskHandle, &task_init_param);
-    if(LOS_OK != uwRet)
+    if (LOS_OK != uwRet)
     {
         return uwRet;
     }
     return uwRet;
 }
 #endif
-
-// 操作系统创建任务总入口:
-UINT32 create_work_tasks(VOID)
-{
-    UINT32 uwRet = LOS_OK;
-
-    uwRet = create_agenttiny_task();
-    if (uwRet != LOS_OK)
-    {
-    	return LOS_NOK;
-    }
-    uwRet = create_NN_task();//创建NN任务
-    if (uwRet != LOS_OK)
-    {
-    	return LOS_NOK;
-    }
-
-
-#if defined(USE_PPPOS)
-    #include "osport.h"
-    extern void uart_init(void);  //this uart used for the pppos interface
-    uart_init();
-    extern VOID *main_ppp(UINT32  args);
-    task_create("main_ppp", main_ppp, 0x1500, NULL, NULL, 2);
-#endif
-
-
-#if defined(WITH_DTLS) && defined(SUPPORT_DTLS_SRV)
-    uwRet = create_dtls_server_task()
-    if (uwRet != LOS_OK)
-    {
-    	return LOS_NOK;
-    }
-#endif
-
-    return uwRet;
-
-}
-
-
-

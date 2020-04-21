@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "sys_init.h": "c",
+        "los_nb_api.h": "c"
+    }
+}
