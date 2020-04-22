@@ -524,6 +524,7 @@ Unknown memory region
 ```
 
 解决:配置下载地址:Burner->Address:`0x08010000`
+特别说明一下，0x08010000是app的起始地址，0x08000000是bootloader的起始地址
 
 ###  Makefile语法没错, 编译失败
 
