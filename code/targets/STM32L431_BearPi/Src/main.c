@@ -32,7 +32,7 @@
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
 #include "main.h"
-#include "sys_init.h"
+#include "sys_init.h"  //è¿™é‡ŒåŒ…å«äº†æ‰€æœ‰çš„ç¡¬ä»¶åˆå§‹åŒ–.h
 
 
 #include "los_base.h"
@@ -40,6 +40,7 @@
 #include "los_typedef.h"
 #include "los_sys.h"
 
+#include "app_x-cube-ai.h" //ç¥ç»ç½‘ç»œä¾èµ–
 
 static UINT32 s_uwTskID1;    
 
@@ -61,11 +62,13 @@ VOID HardWare_Init(VOID)
 	/* Configure the system clock */
 	SystemClock_Config();
 	MX_GPIO_Init();
+    MX_CRC_Init();
     MX_USART3_UART_Init();
 	MX_I2C1_Init();
     MX_I2C1_Init();
 	MX_USART1_UART_Init();
 	MX_SPI2_Init();
+    MX_X_CUBE_AI_Init();//åˆå§‹åŒ–ç¥ç»ç½‘ç»œ
 	dwt_delay_init(SystemCoreClock);
 	LCD_Init();					
 	LCD_Clear(WHITE);		   	
@@ -109,13 +112,13 @@ void process_hlw8032_data(void)
 
 }
 
-//***********´¥Ãş¿ØÖÆÈÎÎñ*****************
+//***********ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*****************
 static VOID * Touch_Task(UINT32 uwArg)
 {
     const CHAR *pcTaskName = " Touch_Task is running\r\n";
     while(1)
     {
-       if(HAL_GPIO_ReadPin(TPIN_GPIO_Port, TPIN_Pin)==GPIO_PIN_SET)//´¥ÃşÊÇ·ñ¸ßµçÆ½
+       if(HAL_GPIO_ReadPin(TPIN_GPIO_Port, TPIN_Pin)==GPIO_PIN_SET)//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ßµï¿½Æ½
        {
            beep_waming(3,1);
            while(HAL_GPIO_ReadPin(TPIN_GPIO_Port, TPIN_Pin)==GPIO_PIN_SET)
@@ -140,8 +143,8 @@ static VOID * Touch_Task(UINT32 uwArg)
            
            /*
             HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
-            HAL_GPIO_TogglePin(CTL_GPIO_Port, CTL_Pin); //¼ÌµçÆ÷¿ª¶Ï
-            HAL_GPIO_TogglePin(USBEN_GPIO_Port, USBEN_Pin); //usb²å¿Ú¿ª¶Ï
+            HAL_GPIO_TogglePin(CTL_GPIO_Port, CTL_Pin); //ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            HAL_GPIO_TogglePin(USBEN_GPIO_Port, USBEN_Pin); //usbï¿½ï¿½Ú¿ï¿½ï¿½ï¿½
              printf("\r\n Key1 presed!\r\n");
             */
            LOS_TaskDelay(20); 
@@ -151,7 +154,7 @@ static VOID * Touch_Task(UINT32 uwArg)
 
        if(CTL_ON == true )  
        {
-            if(HAL_GPIO_ReadPin(OVERCRENT_GPIO_Port, OVERCRENT_Pin)==GPIO_PIN_SET) //¹ıÁ÷¶Ï¿ª
+            if(HAL_GPIO_ReadPin(OVERCRENT_GPIO_Port, OVERCRENT_Pin)==GPIO_PIN_SET) //ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½
             {
                 HAL_GPIO_WritePin(CTL_GPIO_Port,CTL_Pin,GPIO_PIN_RESET);  
                 HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);  
@@ -185,7 +188,7 @@ UINT32 Touch_Entry(VOID) {
     return uwRet;
 }
 
-void beep_waming(unsigned char kind, unsigned char time)  // ±¨¾¯ÀàĞÍ ´ÎÊı
+void beep_waming(unsigned char kind, unsigned char time)  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 {
     unsigned char i;
     switch(kind)

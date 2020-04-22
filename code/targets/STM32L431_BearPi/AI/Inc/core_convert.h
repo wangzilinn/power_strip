@@ -1,23 +1,13 @@
-/*
- * @Description: 
- * @Author: Wang Zilin
- * @Date: 2020-04-20 23:12:36
- * @LastEditors: Wang Zilin
- * @LastEditTime: 2020-04-22 14:15:39
- */
 /**
   ******************************************************************************
-  * File Name          : I2C.h
-  * Description        : This file provides code for the configuration
-  *                      of the I2C instances.
+  * @file    core_utils.h
+  * @author  AST Embedded Analytics Research Platform
+  * @date    16-Aug-2018
+  * @brief   header file of core utils routines
   ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
+  * @attention
   *
-  * COPYRIGHT(c) 2019 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -43,50 +33,57 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __i2c_H
-#define __i2c_H
-#ifdef __cplusplus
- extern "C" {
-#endif
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32l4xx_hal.h"
-#include "main.h"
+#ifndef __CORE_CONVERT_H_
+#define __CORE_CONVERT_H_
+#pragma once
 
-/* USER CODE BEGIN Includes */
+#include "ai_platform.h"
+#include "ai_platform_interface.h"
 
-/* USER CODE END Includes */
+#include "core_common.h"
 
-extern I2C_HandleTypeDef hi2c1;
-extern I2C_HandleTypeDef hi2c2;
-extern I2C_HandleTypeDef hi2c3;
+AI_API_DECLARE_BEGIN
 
-/* USER CODE BEGIN Private defines */
+/*!
+ * @defgroup core_convert Core Convert Routines
+ * @brief Implementation of core node format convertion routines
+ *   (Q7 to float, ... etc.)
+ */
 
-/* USER CODE END Private defines */
 
-extern void _Error_Handler(char *, int);
+/*!
+ * @brief Convert tensors from float to quantized or viceversa
+ * @ingroup core_convert
+ * @param[in] pNode in a handler to node (layer or operator)
+ */
+AI_INTERNAL_API
+void node_convert(ai_node *pNode);
 
-void MX_I2C1_Init(void);
-void MX_I2C2_Init(void);
-void MX_I2C3_Init(void);
+/*!
+ * @brief Convert integer tensors between QM.N formats (8/16 bits)
+ * @ingroup core_convert
+ * @param[in] pNode in a handler to node (layer or operator)
+ */
+AI_INTERNAL_API
+void node_convert_fixed(ai_node *pNode);
 
-/* USER CODE BEGIN Prototypes */
+/*!
+ * @brief Convert integer tensors between signed and usigned (int8/uint8) formats
+ * @ingroup core_convert
+ * @param[in] pNode in a handler to node (layer or operator)
+ */
+AI_INTERNAL_API
+void node_convert_integer(ai_node *pNode);
 
-/* USER CODE END Prototypes */
+/*!
+ * @brief Convert a shape struct into a stride struct
+ * @ingroup core_convert
+ * @param[in] in a pointer to a shape to convert
+ * @return a condverted stride datastruct
+ */
+AI_INTERNAL_API
+void core_shape_to_stride(ai_stride* out, const ai_shape* in);
 
-#ifdef __cplusplus
-}
-#endif
-#endif /*__ i2c_H */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif    /*__CORE_CONVERT_H_*/

@@ -74,15 +74,13 @@ ASM_SOURCES_s =  \
 
 
 # C sources
-# 这里把所有的.c文件放到了C_SOURCES中, 需要在这里补NN所需的文件
-# Src/network_test.c \
-# Src/network_test_data.c \
-# Src/main.c \
-# Src/app_x-cube-ai.c \
-# Src/stm32l4xx_it.c \
-# Src/stm32l4xx_hal_msp.c \
-
+# 这里把所有的.c文件放到了C_SOURCES中
+# 以下这个文件没有找到添加的地方
+# Src/stm32l4xx_it.c 
+# 新添加stm32l4xx_hal_crc.c和stm32l4xx_hal_crc_ex.c两个HAL文件
 HAL_DRIVER_SRC =  \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc.c \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc_ex.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c \
@@ -199,6 +197,7 @@ ATINY_LOG = \
         ${wildcard $(TOP_DIR)/components/log/*.c}
         C_SOURCES += $(ATINY_LOG)
 
+# 倒数第二行添加NN用到的CRC外设
 USER_SRC =  \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/main.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/system_stm32l4xx.c \
@@ -209,8 +208,16 @@ USER_SRC =  \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/spi.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/gpio.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/adc.c \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Src/crc.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Src/user_task.c
         C_SOURCES += $(USER_SRC)
+
+# 这里添加NN用到的.c文件:
+NN_SRC =  \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Src/app_x-cube-ai.c \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Src/network_test.c \
+		$(TOP_DIR)/targets/STM32L431_BearPi/Src/network_test_data.c
+		C_SOURCES += $(NN_SRC)
 
 ifeq ($(WITH_AT_FRAMEWORK), yes)
 AT_FRAME_SRC = \
@@ -486,6 +493,12 @@ FLAG_INC = \
         -I $(TOP_DIR)/components/ota/flag_operate
         C_INCLUDES += $(FLAG_INC)
 endif
+
+# NN的include:
+NN_INC = \
+		-I $(TOP_DIR)/targets/STM32L431_BearPi/AI/Inc
+		C_INCLUDES += $(NN_INC)
+
 # C_INCLUDES包含.h文件结束
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -512,7 +525,10 @@ LIBS = -lc -lm -lnosys
 ifeq ($(USE_OTA), yes)
 LIBS += -lhwpatch
 endif
-LIBDIR = -L$(PROJECTBASE)/../Lib
+# 添加NN的lib:
+LIBS += -l:NetworkRuntime500_CM4_GCC.a
+LIBDIR = -L$(PROJECTBASE)/../Lib \
+
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all

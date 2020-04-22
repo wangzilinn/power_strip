@@ -43,6 +43,7 @@
 #include "agenttiny_mqtt/agent_tiny_demo.h"
 #else
 #include "agenttiny_lwm2m/agent_tiny_demo.h"
+#include "app_x-cube-ai.h"
 #endif
 /*
  * 全局变量定义
@@ -226,7 +227,7 @@ void NN_task_entry(void)
     while (1)
     {
         printf("running NN task....\n");
-        atiny_delay(4);
+        MX_X_CUBE_AI_Process();
     }
 }
 
@@ -246,7 +247,7 @@ UINT32 create_NN_task(VOID)
     task_init_param.usTaskPrio = 4;
     task_init_param.pcName = "NN_task";
     task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)NN_task_entry;
-    task_init_param.uwStackSize = 0x1800;
+    task_init_param.uwStackSize = 0x3600;
 
     uwRet = LOS_TaskCreate(&g_NN_tskHandle, &task_init_param);
     if (LOS_OK != uwRet)

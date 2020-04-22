@@ -61,6 +61,7 @@
 #include "spi.h"
 #include "lcd.h"
 #include "BH1750.h" 
+#include "crc.h"
 
 #ifdef WITH_DTLS
 #include "mbedtls/net.h"
