@@ -3,12 +3,12 @@
  * @Author: Wang Zilin
  * @Date: 2020-04-22 14:17:29
  * @LastEditors: Wang Zilin
- * @LastEditTime: 2020-04-22 14:21:14
+ * @LastEditTime: 2020-04-22 22:30:07
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __i2c_H
-#define __i2c_H
+#ifndef __CRC_H
+#define __CRC_H
 #ifdef __cplusplus
  extern "C" {
 #endif
