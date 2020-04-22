@@ -6,6 +6,7 @@
         "stm32l4xx_hal.h": "c",
         "stm32l4xx_hal_conf.h": "c",
         "app_x-cube-ai.h": "c",
-        "i2c.h": "c"
+        "i2c.h": "c",
+        "stdio.h": "c"
     }
 }

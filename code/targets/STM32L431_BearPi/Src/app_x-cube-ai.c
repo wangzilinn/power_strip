@@ -195,9 +195,12 @@ void MX_X_CUBE_AI_Process(void)
         res = aiRun(in_data, out_data);
         if (res) {
             // ...
+            printf("1");
             return;
         }
-
+        float input = ((ai_float *)in_data)[0];
+        float output = ((ai_float *)out_data)[0];
+        printf("input:%d output:%d\n", (int)(input * 100), (int)(output * 100));		
         /* Post-Process - process the output buffer */
         // ...
     }

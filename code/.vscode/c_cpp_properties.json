@@ -3,13 +3,22 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:/LiteOS Studio/resources/arm-none-eabi/**",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/targets/STM32L431_BearPi/Inc/*"
+                "${workspaceFolder}/targets/STM32L431_BearPi/Inc/",
+                "${workspaceFolder}/kernel/base/include/",
+                "${workspaceFolder}/kernel/include/",
+                "${workspaceFolder}/targets/STM32L431_BearPi/AI/Inc/",
+                "${workspaceFolder}/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Inc/",
+                "${workspaceFolder}/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy/",
+                "${workspaceFolder}/targets/STM32L431_BearPi/Drivers/CMSIS/Device/ST/STM32L4xx/Include/"
+                
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "NDEBUG",
+                "STM32L431xx",
+                "USE_HAL_DRIVER",
+                "WITH_LWM2M"
             ],
             "windowsSdkVersion": "10.0.15063.0",
             "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.12.25827/bin/Hostx64/x64/cl.exe",

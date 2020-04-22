@@ -320,7 +320,7 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 # macros for gcc
 # AS defines
 AS_DEFS = 
-# 这里新增了很多定义:
+# 这里新增了很多宏定义:
 # C defines
 C_DEFS =  \
         -D USE_HAL_DRIVER \

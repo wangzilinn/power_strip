@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    network_test.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Wed Apr 15 23:41:37 2020
+  * @date    Wed Apr 22 16:53:51 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -28,26 +28,26 @@
 
 #define AI_NETWORK_TEST_IN_NUM       (1)
 #define AI_NETWORK_TEST_IN { \
-  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 784, 1, NULL), \
+  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 1, 1, NULL), \
 }
 #define AI_NETWORK_TEST_IN_SIZE { \
-  (1 * 1 * 784), \
+  (1 * 1 * 1), \
 }
-#define AI_NETWORK_TEST_IN_1_SIZE  (1 * 1 * 784)
-#define AI_NETWORK_TEST_IN_1_SIZE_BYTES  ((1 * 1 * 784) * 4)
+#define AI_NETWORK_TEST_IN_1_SIZE  (1 * 1 * 1)
+#define AI_NETWORK_TEST_IN_1_SIZE_BYTES  ((1 * 1 * 1) * 4)
 
 
 
 
 #define AI_NETWORK_TEST_OUT_NUM      (1)
 #define AI_NETWORK_TEST_OUT { \
-  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 10, 1, NULL), \
+  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 1, 1, NULL), \
 }
 #define AI_NETWORK_TEST_OUT_SIZE { \
-  (1 * 1 * 10), \
+  (1 * 1 * 1), \
 }
-#define AI_NETWORK_TEST_OUT_1_SIZE  (1 * 1 * 10)
-#define AI_NETWORK_TEST_OUT_1_SIZE_BYTES  ((1 * 1 * 10) * 4)
+#define AI_NETWORK_TEST_OUT_1_SIZE  (1 * 1 * 1)
+#define AI_NETWORK_TEST_OUT_1_SIZE_BYTES  ((1 * 1 * 1) * 4)
 
 
 AI_API_DECLARE_BEGIN

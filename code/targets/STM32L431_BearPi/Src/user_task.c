@@ -228,6 +228,8 @@ void NN_task_entry(void)
     {
         printf("running NN task....\n");
         MX_X_CUBE_AI_Process();
+        printf("done\n");
+        atiny_delay(4);
     }
 }
 
@@ -247,7 +249,7 @@ UINT32 create_NN_task(VOID)
     task_init_param.usTaskPrio = 4;
     task_init_param.pcName = "NN_task";
     task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)NN_task_entry;
-    task_init_param.uwStackSize = 0x3600;
+    task_init_param.uwStackSize = 0x1800;
 
     uwRet = LOS_TaskCreate(&g_NN_tskHandle, &task_init_param);
     if (LOS_OK != uwRet)
