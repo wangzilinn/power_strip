@@ -24,7 +24,7 @@ TARGET = Huawei_LiteOS
 DEBUG = 1
 # optimization
 OPT = -Og
-
+# 新增部分
 USE_OTA := yes
 OTA_IS_NEED_DTLS := no
 ifeq ($(USE_FOTA), yes)
@@ -38,7 +38,6 @@ ifeq ($(USE_OTA), yes)
 	OTA_IS_NEED_DTLS = yes
     endif
 endif
-
 #######################################
 # binaries
 #######################################
@@ -56,11 +55,11 @@ BIN       = $(OBJCOPY) -O binary -S
 
 PROJECTBASE = $(abspath $(CURDIR))
 TOP_DIR     = $(abspath $(PROJECTBASE)/../../..)
-
+# 新增部分结束
 #######################################
 # paths
 #######################################
-# firmware library path
+# firmware library path 新增变量:
 PERIFLIB_PATH =
 
 # Build path
@@ -69,12 +68,19 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
-# ASM
+# ASM 新增变量 这是后缀为s的ASM, 在C sources还有一个后缀为S的ASM:ASM_SOURCES_S
 ASM_SOURCES_s =  \
        ${wildcard $(PROJECTBASE)/los_startup_gcc.s}
 
 
 # C sources
+# 这里把所有的.c文件放到了C_SOURCES中, 需要在这里补NN所需的文件
+# Src/network_test.c \
+# Src/network_test_data.c \
+# Src/main.c \
+# Src/app_x-cube-ai.c \
+# Src/stm32l4xx_it.c \
+# Src/stm32l4xx_hal_msp.c \
 
 HAL_DRIVER_SRC =  \
         $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
@@ -115,6 +121,7 @@ HAL_DRIVER_SRC_NO_BOOTLOADER =  \
 	$(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
         $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rng.c
 	C_SOURCES += $(HAL_DRIVER_SRC_NO_BOOTLOADER)
+# litos官网新增
 KERNEL_SRC =  \
         ${wildcard $(TOP_DIR)/kernel/*.c} \
         ${wildcard $(TOP_DIR)/kernel/base/core/*.c} \
@@ -130,7 +137,7 @@ KERNEL_SRC =  \
 CMSIS_SRC =  \
         ${wildcard $(TOP_DIR)/osdepends/liteos/cmsis/*.c}
         C_SOURCES += $(CMSIS_SRC)
-
+# litos官网新增
 ARCH_SRC =  \
         ${wildcard $(TOP_DIR)/arch/arm/arm-m/src/*.c} \
         ${wildcard $(TOP_DIR)/arch/arm/arm-m/cortex-m4/*.c}
@@ -261,9 +268,8 @@ ifneq ($(WITH_MQTT), yes)
         C_SOURCES += $(TOP_DIR)/targets/STM32L431_BearPi/Src/flash_adaptor.c
 endif
 endif
-
 # ASM sources
-
+# liteos官网新增
 ASM_SOURCES_S =  \
         ${wildcard $(TOP_DIR)/arch/arm/arm-m/cortex-m4/gcc/los_dispatch_gcc.S}
 
@@ -307,7 +313,7 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 # macros for gcc
 # AS defines
 AS_DEFS = 
-
+# 这里新增了很多定义:
 # C defines
 C_DEFS =  \
         -D USE_HAL_DRIVER \
@@ -389,7 +395,7 @@ endif
 AS_INCLUDES = 
 
 # C includes
-
+# 这里把所有的.h文件都包含在了C_INCLUDES中
 HAL_DRIVER_INC = \
         -I $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Inc \
         -I $(TOP_DIR)/targets/STM32L431_BearPi/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy
@@ -434,12 +440,13 @@ ifeq ($(USE_BOOTLOADER), no)
 OS_CONFIG_INC = \
 	-I $(TOP_DIR)/targets/STM32L431_BearPi/OS_CONFIG
 	C_INCLUDES += $(OS_CONFIG_INC)
+# liteos官网新增
 KERNEL_INC = \
         -I $(TOP_DIR)/kernel/include \
 	-I $(TOP_DIR)/kernel/base/include \
 	-I $(TOP_DIR)/kernel/extended/include
         C_INCLUDES += $(KERNEL_INC)
-
+# liteos官网新增
 ARCH_INC = \
         -I $(TOP_DIR)/arch/arm/arm-m/include \
         -I $(TOP_DIR)/arch/arm/arm-m/cortex-m4
@@ -479,7 +486,7 @@ FLAG_INC = \
         -I $(TOP_DIR)/components/ota/flag_operate
         C_INCLUDES += $(FLAG_INC)
 endif
-
+# C_INCLUDES包含.h文件结束
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -500,7 +507,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # link script
 LDSCRIPT = STM32L431RCTx_FLASH.ld
 
-# libraries
+# libraries 这里包含了所有的lib
 LIBS = -lc -lm -lnosys
 ifeq ($(USE_OTA), yes)
 LIBS += -lhwpatch
@@ -521,10 +528,12 @@ vpath %.c $(sort $(dir $(C_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES_s:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES_s)))
 ifeq ($(USE_BOOTLOADER), no)
+
+# liteos官网新增
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES_S:.S=.o)))
 vpath %.S $(sort $(dir $(ASM_SOURCES_S)))
 endif   
-
+# liteos与官网不同:
 $(BUILD_DIR)/%.o: %.c Makefile config.mk prune.mk | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
